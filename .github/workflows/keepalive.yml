@@ -1,0 +1,46 @@
+name: Keep API Alive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # every 10 minutes
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+
+    steps:
+      - name: Random sleep + random API ping
+        run: |
+          APIS=(
+            "${{ secrets.API_1 }}"
+            "${{ secrets.API_2 }}"
+            "${{ secrets.API_3 }}"
+            "${{ secrets.API_4 }}"
+            "${{ secrets.API_5 }}"
+          )
+
+          # Remove empty secrets (safety)
+          APIS=("${APIS[@]/#/}")
+
+          COUNT=${#APIS[@]}
+          if [ "$COUNT" -eq 0 ]; then
+            echo "No APIs configured"
+            exit 1
+          fi
+
+          # Pick random API
+          API=${APIS[$RANDOM % COUNT]}
+
+          # Random sleep: 0–480 seconds (0–8 minutes)
+          SLEEP=$((RANDOM % 480))
+
+          echo "Sleeping for $SLEEP seconds..."
+          sleep "$SLEEP"
+
+          echo "Sending request..."
+          curl -s \
+            -H "User-Agent: Mozilla/5.0" \
+            -H "Accept: application/json" \
+            "$API"
