@@ -2,7 +2,7 @@ name: Keep API Alive
 
 on:
   schedule:
-    - cron: "*/10 * * * *"   # every 10 minutes
+    - cron: "*/7 * * * *"   # every 10 minutes
   workflow_dispatch:
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
           API=${APIS[$RANDOM % COUNT]}
 
           # Random sleep: 0–480 seconds (0–8 minutes)
-          SLEEP=$((RANDOM % 480))
+          SLEEP=$((RANDOM % 300))
 
           echo "Sleeping for $SLEEP seconds..."
           sleep "$SLEEP"
